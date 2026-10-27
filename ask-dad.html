@@ -217,7 +217,9 @@ Address him casually. Sometimes he starts with "Hey Mord" or "Mord?".`;
       }
 
       try {
-        const res = await fetch("https://api.fish.audio/v1/tts", {
+        // Proxy to bypass CORS
+        const target = "https://api.fish.audio/v1/tts";
+        const res = await fetch("https://corsproxy.io/?" + encodeURIComponent(target), {
           method: "POST",
           headers: {
             "Authorization": "Bearer " + fishKey,
@@ -236,8 +238,8 @@ Address him casually. Sometimes he starts with "Hey Mord" or "Mord?".`;
         const audio = new Audio(url);
         audio.play();
       } catch (err) {
-        console.error(err);
-        // fallback
+        console.error("Fish Audio error:", err);
+        addMessage("(Fish Audio failed — using browser voice: " + (err.message || err) + ")", false);
         if ('speechSynthesis' in window) {
           const utter = new SpeechSynthesisUtterance(text);
           utter.lang = 'en-AU';
